@@ -26,19 +26,15 @@ namespace Yash.FluentDataPipelines.Extensions
                 return "null";
             }
 
-            if (!pipelineValue.IsValid && config.CustomFormatterWithValidation != null)
+            // CustomFormatterWithValidation takes precedence over CustomFormatter
+            if (config.CustomFormatterWithValidation != null)
             {
-                return config.CustomFormatterWithValidation(pipelineValue.Value, false);
+                return config.CustomFormatterWithValidation(pipelineValue.Value, pipelineValue.IsValid);
             }
 
             if (config.CustomFormatter != null)
             {
                 return config.CustomFormatter(pipelineValue.Value);
-            }
-
-            if (config.CustomFormatterWithValidation != null)
-            {
-                return config.CustomFormatterWithValidation(pipelineValue.Value, pipelineValue.IsValid);
             }
 
             if (pipelineValue.Value == null)

@@ -5,7 +5,7 @@ using UiPath.Activities.System.Jobs.Coded;
 using UiPath.CodedWorkflows;
 using Yash.FluentDataPipelines.Core;
 
-namespace Yash.FluentDataPipelines
+namespace Yash.FluentDataPipelines.Tests.Core
 {
     public class PipelineValueTests : CodedWorkflow
     {
@@ -38,9 +38,9 @@ namespace Yash.FluentDataPipelines
             var pipelineValue = new PipelineValue<string>("test");
 
             // Assert
-            testing.VerifyExpression(pipelineValue.Value == "test", "Value should be 'test'");
-            testing.VerifyExpression(pipelineValue.IsValid == true, "IsValid should default to true");
-            testing.VerifyExpression(pipelineValue.Errors.Count == 0, "Errors should be empty");
+            testing.VerifyExpression(pipelineValue.Value == "test", $"Value should be 'test'. Expected: 'test', Actual: '{pipelineValue.Value}'", true, "Value should be 'test'", false, false);
+            testing.VerifyExpression(pipelineValue.IsValid == true, $"IsValid should default to true. Expected: true, Actual: {pipelineValue.IsValid}", true, "IsValid should default to true", false, false);
+            testing.VerifyExpression(pipelineValue.Errors.Count == 0, $"Errors should be empty. Expected: 0, Actual: {pipelineValue.Errors.Count}", true, "Errors should be empty", false, false);
         }
 
         public void Constructor_WithValueAndIsValid_SetsCorrectly()
@@ -50,8 +50,8 @@ namespace Yash.FluentDataPipelines
             var invalidValue = new PipelineValue<string>("test", false);
 
             // Assert
-            testing.VerifyExpression(validValue.IsValid == true, "Valid value should have IsValid = true");
-            testing.VerifyExpression(invalidValue.IsValid == false, "Invalid value should have IsValid = false");
+            testing.VerifyExpression(validValue.IsValid == true, $"Valid value should have IsValid = true. Expected: true, Actual: {validValue.IsValid}", true, "Valid value should have IsValid = true", false, false);
+            testing.VerifyExpression(invalidValue.IsValid == false, $"Invalid value should have IsValid = false. Expected: false, Actual: {invalidValue.IsValid}", true, "Invalid value should have IsValid = false", false, false);
         }
 
         public void Constructor_WithErrors_SetsErrorsCorrectly()
@@ -63,9 +63,9 @@ namespace Yash.FluentDataPipelines
             var pipelineValue = new PipelineValue<string>("test", false, errors);
 
             // Assert
-            testing.VerifyExpression(pipelineValue.Errors.Count == 2, "Should have 2 errors");
-            testing.VerifyExpression(pipelineValue.Errors[0].Message == "Error 1", "First error message should match");
-            testing.VerifyExpression(pipelineValue.Errors[1].Message == "Error 2", "Second error message should match");
+            testing.VerifyExpression(pipelineValue.Errors.Count == 2, $"Should have 2 errors. Expected: 2, Actual: {pipelineValue.Errors.Count}", true, "Should have 2 errors", false, false);
+            testing.VerifyExpression(pipelineValue.Errors[0].Message == "Error 1", $"First error message should match. Expected: 'Error 1', Actual: '{pipelineValue.Errors[0].Message}'", true, "First error message should match", false, false);
+            testing.VerifyExpression(pipelineValue.Errors[1].Message == "Error 2", $"Second error message should match. Expected: 'Error 2', Actual: '{pipelineValue.Errors[1].Message}'", true, "Second error message should match", false, false);
         }
 
         public void Constructor_WithNullErrors_DefaultsToEmpty()
@@ -74,7 +74,7 @@ namespace Yash.FluentDataPipelines
             var pipelineValue = new PipelineValue<string>("test", true, null);
 
             // Assert
-            testing.VerifyExpression(pipelineValue.Errors.Count == 0, "Errors should default to empty when null");
+            testing.VerifyExpression(pipelineValue.Errors.Count == 0, $"Errors should default to empty when null. Expected: 0, Actual: {pipelineValue.Errors.Count}", true, "Errors should default to empty when null", false, false);
         }
 
         public void Properties_AreReadOnly_Immutability()
@@ -85,10 +85,10 @@ namespace Yash.FluentDataPipelines
             // Act & Assert
             // Properties should be read-only, so we can't modify them directly
             // This test verifies the structure is immutable
-            testing.VerifyExpression(pipelineValue.Value == "test", "Value should remain unchanged");
+            testing.VerifyExpression(pipelineValue.Value == "test", $"Value should remain unchanged. Expected: 'test', Actual: '{pipelineValue.Value}'", true, "Value should remain unchanged", false, false);
             var newValue = pipelineValue.WithValue("new");
-            testing.VerifyExpression(pipelineValue.Value == "test", "Original value should remain unchanged");
-            testing.VerifyExpression(newValue.Value == "new", "New value should be different");
+            testing.VerifyExpression(pipelineValue.Value == "test", $"Original value should remain unchanged. Expected: 'test', Actual: '{pipelineValue.Value}'", true, "Original value should remain unchanged", false, false);
+            testing.VerifyExpression(newValue.Value == "new", $"New value should be different. Expected: 'new', Actual: '{newValue.Value}'", true, "New value should be different", false, false);
         }
 
         public void WithValue_TransformsValue_PreservesValidationState()
@@ -100,9 +100,9 @@ namespace Yash.FluentDataPipelines
             var transformed = original.WithValue<int>(42);
 
             // Assert
-            testing.VerifyExpression(transformed.Value == 42, "Value should be transformed");
-            testing.VerifyExpression(transformed.IsValid == true, "Validation state should be preserved");
-            testing.VerifyExpression(transformed.Errors.Count == 0, "Errors should be preserved");
+            testing.VerifyExpression(transformed.Value == 42, $"Value should be transformed. Expected: 42, Actual: {transformed.Value}", true, "Value should be transformed", false, false);
+            testing.VerifyExpression(transformed.IsValid == true, $"Validation state should be preserved. Expected: true, Actual: {transformed.IsValid}", true, "Validation state should be preserved", false, false);
+            testing.VerifyExpression(transformed.Errors.Count == 0, $"Errors should be preserved. Expected: 0, Actual: {transformed.Errors.Count}", true, "Errors should be preserved", false, false);
         }
 
         public void WithValue_PreservesErrors()
@@ -115,9 +115,9 @@ namespace Yash.FluentDataPipelines
             var transformed = original.WithValue<int>(42);
 
             // Assert
-            testing.VerifyExpression(transformed.Errors.Count == 1, "Errors should be preserved");
-            testing.VerifyExpression(transformed.Errors[0].Message == "Test error", "Error message should be preserved");
-            testing.VerifyExpression(transformed.IsValid == false, "Invalid state should be preserved");
+            testing.VerifyExpression(transformed.Errors.Count == 1, $"Errors should be preserved. Expected: 1, Actual: {transformed.Errors.Count}", true, "Errors should be preserved", false, false);
+            testing.VerifyExpression(transformed.Errors[0].Message == "Test error", $"Error message should be preserved. Expected: 'Test error', Actual: '{transformed.Errors[0].Message}'", true, "Error message should be preserved", false, false);
+            testing.VerifyExpression(transformed.IsValid == false, $"Invalid state should be preserved. Expected: false, Actual: {transformed.IsValid}", true, "Invalid state should be preserved", false, false);
         }
 
         public void WithValidation_PassingValidation_RemainsValid()
@@ -129,8 +129,8 @@ namespace Yash.FluentDataPipelines
             var result = original.WithValidation(true);
 
             // Assert
-            testing.VerifyExpression(result.IsValid == true, "Should remain valid");
-            testing.VerifyExpression(result.Errors.Count == 0, "Should have no errors");
+            testing.VerifyExpression(result.IsValid == true, $"Should remain valid. Expected: true, Actual: {result.IsValid}", true, "Should remain valid", false, false);
+            testing.VerifyExpression(result.Errors.Count == 0, $"Should have no errors. Expected: 0, Actual: {result.Errors.Count}", true, "Should have no errors", false, false);
         }
 
         public void WithValidation_FailingValidation_BecomesInvalid()
@@ -143,9 +143,9 @@ namespace Yash.FluentDataPipelines
             var result = original.WithValidation(false, error);
 
             // Assert
-            testing.VerifyExpression(result.IsValid == false, "Should become invalid");
-            testing.VerifyExpression(result.Errors.Count == 1, "Should have one error");
-            testing.VerifyExpression(result.Errors[0].Message == "Validation failed", "Error message should match");
+            testing.VerifyExpression(result.IsValid == false, $"Should become invalid. Expected: false, Actual: {result.IsValid}", true, "Should become invalid", false, false);
+            testing.VerifyExpression(result.Errors.Count == 1, $"Should have one error. Expected: 1, Actual: {result.Errors.Count}", true, "Should have one error", false, false);
+            testing.VerifyExpression(result.Errors[0].Message == "Validation failed", $"Error message should match. Expected: 'Validation failed', Actual: '{result.Errors[0].Message}'", true, "Error message should match", false, false);
         }
 
         public void WithValidation_MultipleValidations_AllMustPass()
@@ -159,8 +159,8 @@ namespace Yash.FluentDataPipelines
             var afterSecond = afterFirst.WithValidation(true);
 
             // Assert
-            testing.VerifyExpression(afterSecond.IsValid == false, "Should remain invalid if any validation failed");
-            testing.VerifyExpression(afterSecond.Errors.Count == 1, "Should have one error");
+            testing.VerifyExpression(afterSecond.IsValid == false, $"Should remain invalid if any validation failed. Expected: false, Actual: {afterSecond.IsValid}", true, "Should remain invalid if any validation failed", false, false);
+            testing.VerifyExpression(afterSecond.Errors.Count == 1, $"Should have one error. Expected: 1, Actual: {afterSecond.Errors.Count}", true, "Should have one error", false, false);
         }
 
         public void WithValidation_OnInvalidValue_StaysInvalid()
@@ -172,8 +172,8 @@ namespace Yash.FluentDataPipelines
             var result = original.WithValidation(true);
 
             // Assert
-            testing.VerifyExpression(result.IsValid == false, "Should stay invalid");
-            testing.VerifyExpression(result.Errors.Count == 1, "Original error should be preserved");
+            testing.VerifyExpression(result.IsValid == false, $"Should stay invalid. Expected: false, Actual: {result.IsValid}", true, "Should stay invalid", false, false);
+            testing.VerifyExpression(result.Errors.Count == 1, $"Original error should be preserved. Expected: 1, Actual: {result.Errors.Count}", true, "Original error should be preserved", false, false);
         }
 
         public void WithError_AddsSingleError()
@@ -186,9 +186,9 @@ namespace Yash.FluentDataPipelines
             var result = original.WithError(error);
 
             // Assert
-            testing.VerifyExpression(result.IsValid == false, "Should become invalid");
-            testing.VerifyExpression(result.Errors.Count == 1, "Should have one error");
-            testing.VerifyExpression(result.Errors[0].Message == "Test error", "Error message should match");
+            testing.VerifyExpression(result.IsValid == false, $"Should become invalid. Expected: false, Actual: {result.IsValid}", true, "Should become invalid", false, false);
+            testing.VerifyExpression(result.Errors.Count == 1, $"Should have one error. Expected: 1, Actual: {result.Errors.Count}", true, "Should have one error", false, false);
+            testing.VerifyExpression(result.Errors[0].Message == "Test error", $"Error message should match. Expected: 'Test error', Actual: '{result.Errors[0].Message}'", true, "Error message should match", false, false);
         }
 
         public void WithError_AddsMultipleErrors()
@@ -203,9 +203,9 @@ namespace Yash.FluentDataPipelines
             var afterSecond = afterFirst.WithError(error2);
 
             // Assert
-            testing.VerifyExpression(afterSecond.Errors.Count == 2, "Should have two errors");
-            testing.VerifyExpression(afterSecond.Errors[0].Message == "Error 1", "First error should match");
-            testing.VerifyExpression(afterSecond.Errors[1].Message == "Error 2", "Second error should match");
+            testing.VerifyExpression(afterSecond.Errors.Count == 2, $"Should have two errors. Expected: 2, Actual: {afterSecond.Errors.Count}", true, "Should have two errors", false, false);
+            testing.VerifyExpression(afterSecond.Errors[0].Message == "Error 1", $"First error should match. Expected: 'Error 1', Actual: '{afterSecond.Errors[0].Message}'", true, "First error should match", false, false);
+            testing.VerifyExpression(afterSecond.Errors[1].Message == "Error 2", $"Second error should match. Expected: 'Error 2', Actual: '{afterSecond.Errors[1].Message}'", true, "Second error should match", false, false);
         }
 
         public void WithError_SetsIsValidToFalse()
@@ -217,7 +217,7 @@ namespace Yash.FluentDataPipelines
             var result = original.WithError("Test error", "TestOp");
 
             // Assert
-            testing.VerifyExpression(result.IsValid == false, "IsValid should be false");
+            testing.VerifyExpression(result.IsValid == false, $"IsValid should be false. Expected: false, Actual: {result.IsValid}", true, "IsValid should be false", false, false);
         }
 
         public void WithError_ErrorsCollectionGrows()
@@ -231,7 +231,7 @@ namespace Yash.FluentDataPipelines
             var result3 = result2.WithError("Error 3", "Op3");
 
             // Assert
-            testing.VerifyExpression(result3.Errors.Count == 3, "Should have three errors");
+            testing.VerifyExpression(result3.Errors.Count == 3, $"Should have three errors. Expected: 3, Actual: {result3.Errors.Count}", true, "Should have three errors", false, false);
         }
 
         public void ImplicitConversion_PipelineValueToT()
@@ -243,7 +243,7 @@ namespace Yash.FluentDataPipelines
             string value = pipelineValue;
 
             // Assert
-            testing.VerifyExpression(value == "test", "Implicit conversion should work");
+            testing.VerifyExpression(value == "test", $"Implicit conversion should work. Expected: 'test', Actual: '{value}'", true, "Implicit conversion should work", false, false);
         }
 
         public void ImplicitConversion_TToPipelineValue()
@@ -255,8 +255,8 @@ namespace Yash.FluentDataPipelines
             PipelineValue<string> pipelineValue = value;
 
             // Assert
-            testing.VerifyExpression(pipelineValue.Value == "test", "Implicit conversion should work");
-            testing.VerifyExpression(pipelineValue.IsValid == true, "Should default to valid");
+            testing.VerifyExpression(pipelineValue.Value == "test", $"Implicit conversion should work. Expected: 'test', Actual: '{pipelineValue.Value}'", true, "Implicit conversion should work", false, false);
+            testing.VerifyExpression(pipelineValue.IsValid == true, $"Should default to valid. Expected: true, Actual: {pipelineValue.IsValid}", true, "Should default to valid", false, false);
         }
 
         public void ImplicitConversion_NullHandling()
@@ -268,7 +268,7 @@ namespace Yash.FluentDataPipelines
             string value = nullPipelineValue;
 
             // Assert
-            testing.VerifyExpression(value == null, "Null PipelineValue should convert to null");
+            testing.VerifyExpression(value == null, $"Null PipelineValue should convert to null. Expected: null, Actual: {value}", true, "Null PipelineValue should convert to null", false, false);
         }
     }
 }

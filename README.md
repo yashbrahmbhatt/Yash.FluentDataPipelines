@@ -84,249 +84,121 @@ if (!result.IsValid)
 }
 ```
 
-## API Documentation
+## Documentation
 
-### Extraction Operations
+For detailed documentation on all features and operations, see the [Documentation](docs/) folder:
 
-Extract typed values from strings with optional regex patterns and custom parsing.
+- **[Core Concepts](docs/core-concepts.md)** - PipelineValue, PipelineError, CrossValidationResult, and validation state propagation
+- **[Extraction Operations](docs/extraction.md)** - Extract typed values from strings with regex, fuzzy matching, and custom parsing
+- **[Validation Operations](docs/validation.md)** - Validate dates, numbers, strings, and custom conditions
+- **[Transformation Operations](docs/transformation.md)** - Transform dates, numbers, strings, and collections
+- **[Formatting Operations](docs/formatting.md)** - Format values into strings with multiple options
+- **[Collection Operations](docs/collections.md)** - Work with collections using LINQ-like operations
+- **[Fuzzy Matching](docs/fuzzy-matching.md)** - Advanced fuzzy string matching, normalization, and cross-validation
+- **[Configuration Reference](docs/configuration.md)** - Complete reference for all configuration objects
 
-#### Basic Extraction
+## Quick API Reference
+
+### Extraction
 
 ```csharp
-// Extract dates
+// Basic extraction
 var date = "2024-12-10".ExtractDate();
-
-// Extract numbers
 var number = "42".ExtractInt();
 var price = "99.99".ExtractDecimal();
-
-// Extract booleans
 var flag = "true".ExtractBool();
-
-// Extract GUIDs
 var guid = "550e8400-e29b-41d4-a716-446655440000".ExtractGuid();
-```
 
-#### Advanced Extraction with Configuration
-
-```csharp
-using Yash.FluentDataPipelines.Configuration;
-
-// Extract using regex with group index
+// Advanced with configuration
 var config = new ExtractConfig
 {
     RegexPattern = @"Price: \$(\d+\.\d{2})",
-    GroupIndex = 1,  // Extract first capture group
-    RegexOptions = RegexOptions.IgnoreCase
+    GroupIndex = 1
 };
-
 var price = "Price: $99.99".Extract<decimal>(config, (str, cfg) => 
     decimal.Parse(str, cfg.NumberStyles, cfg.Culture));
-
-// Extract date with custom format
-var dateConfig = new ExtractConfig
-{
-    DateTimeFormat = "dd/MM/yyyy",
-    Culture = CultureInfo.GetCultureInfo("en-GB")
-};
-
-var date = "25/12/2024".ExtractDate(dateConfig);
 ```
 
-### Validation Operations
-
-Validate values against conditions. Validations update the `IsValid` state but don't stop the pipeline.
-
-#### Date Validations
+### Validation
 
 ```csharp
-var result = "2024-12-10"
-    .ExtractDate()
-    .Before(DateTime.Now)           // Must be before now
-    .After(DateTime.Now.AddDays(-7)); // Must be after 7 days ago
-```
-
-#### Numeric Validations
-
-```csharp
-var result = "42"
-    .ExtractInt()
-    .GreaterThan(10)              // Must be greater than 10
-    .LessThan(100)                // Must be less than 100
-    .Between(20, 50);             // Must be between 20 and 50 (inclusive)
-```
-
-#### String Validations
-
-```csharp
-var result = "user@example.com"
-    .Contains("@")                 // Must contain @
-    .Matches(@"^[\w\.-]+@[\w\.-]+\.\w+$"); // Must match email pattern
-```
-
-#### Custom Validation
-
-```csharp
-using Yash.FluentDataPipelines.Configuration;
-
-var config = new ValidationConfig
-{
-    CustomValidator = value => ((int)value) % 2 == 0,
-    ErrorMessage = "Value must be even"
-};
-
-var result = "42"
-    .ExtractInt()
-    .Validate(config, (value, cfg) => cfg.CustomValidator(value));
-```
-
-### Transformation Operations
-
-Transform values while preserving validation state.
-
-#### Date Transformations
-
-```csharp
-var result = "2024-12-10"
-    .ExtractDate()
-    .AddDays(7)                   // Add 7 days
-    .AddMonths(1)                 // Add 1 month
-    .AddYears(1)                  // Add 1 year
-    .Add(TimeSpan.FromHours(12)); // Add 12 hours
-```
-
-#### Numeric Transformations
-
-```csharp
-var result = "99.99"
-    .ExtractDecimal()
-    .Multiply(1.1m)               // Multiply by 1.1
-    .Divide(2m)                   // Divide by 2
-    .Round(2);                    // Round to 2 decimal places
-```
-
-#### String Transformations
-
-```csharp
-var result = "  Hello World  "
-    .Trim()                       // Remove whitespace
-    .ToUpper()                    // Convert to uppercase
-    .ToLower()                    // Convert to lowercase
-    .Replace("world", "Universe"); // Replace text
-```
-
-### Formatting Operations
-
-Format values into human-readable strings with multiple options.
-
-#### Basic Formatting
-
-```csharp
-// Default formatting
-var result = "2024-12-10".ExtractDate().Format();
-
-// Custom format string
-var result = "2024-12-10".ExtractDate().Format("yyyy-MM-dd");
-
-// Format with callback (value only)
-var result = "42".ExtractInt().Format(value => $"Count: {value}");
-
-// Format with callback (value + validation state)
 var result = "2024-12-10"
     .ExtractDate()
     .Before(DateTime.Now)
-    .Format((value, isValid) => isValid ? $"Valid: {value:yyyy-MM-dd}" : "Invalid date");
+    .After(DateTime.Now.AddDays(-7));
+
+var result = "42"
+    .ExtractInt()
+    .GreaterThan(10)
+    .LessThan(100)
+    .Between(20, 50);
+
+var result = "user@example.com"
+    .Contains("@")
+    .Matches(@"^[\w\.-]+@[\w\.-]+\.\w+$");
 ```
 
-#### Type-Specific Formatting
+### Transformation
 
 ```csharp
-// Format dates
-var dateStr = "2024-12-10".ExtractDate().FormatDate("yyyy-MM-dd");
+var result = "2024-12-10"
+    .ExtractDate()
+    .AddDays(7)
+    .AddMonths(1);
 
-// Format numbers
-var numberStr = "99.99".ExtractDecimal().FormatNumber("N2");
+var result = "99.99"
+    .ExtractDecimal()
+    .Multiply(1.1m)
+    .Divide(2m)
+    .Round(2);
 
-// Format currency
-var currencyStr = "99.99".ExtractDecimal().FormatCurrency();
+var result = "  Hello World  "
+    .Trim()
+    .ToUpper()
+    .Replace("world", "Universe");
 ```
 
-### Collection Operations
+### Formatting
 
-Work with collections in your pipelines.
+```csharp
+var result = "2024-12-10"
+    .ExtractDate()
+    .Format("yyyy-MM-dd");
+
+var result = "99.99"
+    .ExtractDecimal()
+    .FormatCurrency();
+
+var result = "42"
+    .ExtractInt()
+    .Format((value, isValid) => isValid ? $"Count: {value}" : "Invalid");
+```
+
+### Collections
 
 ```csharp
 var numbers = new[] { 1, 2, 3, 4, 5 };
-
 var result = numbers
-    .Where(x => x > 2)            // Filter: [3, 4, 5]
-    .Select(x => x * 2)           // Transform: [6, 8, 10]
-    .First();                     // Get first: 6
-
-// With default values
-var firstOrDefault = numbers
-    .Where(x => x > 10)
-    .FirstOrDefault(0);          // Returns 0 if no match
+    .Where(x => x > 2)
+    .Select(x => x * 2)
+    .First();
 ```
 
-## Configuration Reference
+### Fuzzy Matching
 
-### ExtractConfig
+```csharp
+var result = "John Smith"
+    .FuzzyMatch("Jon Smith", new FuzzyMatchingConfig 
+    { 
+        SimilarityThreshold = 0.8 
+    });
 
-Configure extraction operations with fine-grained control.
+var result = "123 Main St"
+    .NormalizeAddress()
+    .FuzzyMatch("123 Main Street");
+```
 
-| Property | Type | Default | Description |
-|----------|------|---------|-------------|
-| `RegexPattern` | `string` | `null` | Regular expression pattern for extraction |
-| `GroupIndex` | `int` | `0` | Regex group index to extract (0 = entire match) |
-| `RegexOptions` | `RegexOptions` | `None` | Regex matching options |
-| `Culture` | `CultureInfo` | `CurrentCulture` | Culture for parsing dates/numbers |
-| `DateTimeFormat` | `string` | `null` | Format string for DateTime parsing |
-| `DateTimeFormats` | `string[]` | `null` | Array of format strings to try |
-| `DateTimeStyles` | `DateTimeStyles` | `None` | DateTime parsing styles |
-| `NumberStyles` | `NumberStyles` | `Any` | Number parsing styles |
-| `ThrowOnFailure` | `bool` | `false` | Whether to throw exceptions on failure |
-
-### ValidationConfig
-
-Configure validation operations.
-
-| Property | Type | Default | Description |
-|----------|------|---------|-------------|
-| `CaseSensitive` | `bool` | `true` | Whether string comparisons are case-sensitive |
-| `StringComparison` | `StringComparison` | `Ordinal` | String comparison type |
-| `Tolerance` | `double?` | `null` | Tolerance for numeric comparisons |
-| `InclusiveLowerBound` | `bool` | `true` | Whether lower bound is inclusive in ranges |
-| `InclusiveUpperBound` | `bool` | `true` | Whether upper bound is inclusive in ranges |
-| `CustomValidator` | `Func<object, bool>` | `null` | Custom validation function |
-| `ErrorMessage` | `string` | `null` | Custom error message for validation failures |
-
-### TransformationConfig
-
-Configure transformation operations.
-
-| Property | Type | Default | Description |
-|----------|------|---------|-------------|
-| `RoundingMode` | `MidpointRounding` | `ToEven` | Rounding mode for numeric operations |
-| `Culture` | `CultureInfo` | `CurrentCulture` | Culture for transformations |
-| `TrimWhitespace` | `bool` | `true` | Whether to trim whitespace |
-| `TrimChars` | `char[]` | `null` | Specific characters to trim |
-| `CustomTransform` | `Func<object, object>` | `null` | Custom transformation function |
-
-### FormatConfig
-
-Configure formatting operations.
-
-| Property | Type | Default | Description |
-|----------|------|---------|-------------|
-| `FormatString` | `string` | `null` | Format string (e.g., "yyyy-MM-dd", "C") |
-| `Culture` | `CultureInfo` | `CurrentCulture` | Culture for formatting |
-| `CustomFormatter` | `Func<object, string>` | `null` | Custom formatter function |
-| `CustomFormatterWithValidation` | `Func<object, bool, string>` | `null` | Custom formatter with validation state |
-| `NullValueString` | `string` | `""` | String to use for null values |
-| `InvalidValueString` | `string` | `"Invalid"` | String to use for invalid values |
-
-## Advanced Examples
+## Examples
 
 ### Complex Data Pipeline
 
@@ -365,16 +237,7 @@ if (!pipelineValue.IsValid)
 }
 ```
 
-### Chaining Multiple Validations
-
-```csharp
-var result = "user@example.com"
-    .Contains("@")
-    .Contains(".")
-    .Matches(@"^[\w\.-]+@[\w\.-]+\.\w+$")
-    .Format((value, isValid) => 
-        isValid ? $"Valid email: {value}" : "Invalid email format");
-```
+For more examples and detailed usage patterns, see the [Documentation](docs/) folder.
 
 ## Best Practices
 

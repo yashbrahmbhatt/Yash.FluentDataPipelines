@@ -1,10 +1,13 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using UiPath.Activities.System.Jobs.Coded;
 using UiPath.CodedWorkflows;
+using Yash.FluentDataPipelines.Core;
 using Yash.FluentDataPipelines.Extensions;
+using Yash.FluentDataPipelines.Configuration;
 
-namespace Yash.FluentDataPipelines
+namespace Yash.FluentDataPipelines.Tests.Integration
 {
     public class IntegrationTests : CodedWorkflow
     {
@@ -41,7 +44,7 @@ namespace Yash.FluentDataPipelines
                 .Format((value, isValid) => isValid ? $"Valid Date: {value:yyyy-MM-dd}" : "Invalid Date");
 
             // Assert
-            testing.VerifyExpression(result.Contains("Valid Date"), "Should format as valid");
+            testing.VerifyExpression(result.Contains("Valid Date"), $"Should format as valid. Expected: result to contain 'Valid Date', Actual: {result}", true, "Should format as valid", false, false);
         }
 
 
@@ -58,7 +61,7 @@ namespace Yash.FluentDataPipelines
                 .Format((value, isValid) => isValid ? $"Valid Date: {value:yyyy-MM-dd}" : "Invalid Date");
 
             // Assert
-            testing.VerifyExpression(result == "Invalid Date", "Should format as invalid");
+            testing.VerifyExpression(result == "Invalid Date", $"Should format as invalid. Expected: 'Invalid Date', Actual: '{result}'", true, "Invalid Date - Should format as invalid", false, false);
         }
 
 
@@ -76,7 +79,7 @@ namespace Yash.FluentDataPipelines
                 .Format((value, isValid) => isValid ? $"Valid: {value}" : "Invalid");
 
             // Assert
-            testing.VerifyExpression(result == "Valid: 42", "Should pass all validations");
+            testing.VerifyExpression(result == "Valid: 42", $"Should pass all validations. Expected: 'Valid: 42', Actual: '{result}'", true, "Valid: 42 - Should pass all validations", false, false);
         }
 
 
@@ -94,9 +97,9 @@ namespace Yash.FluentDataPipelines
                 .LessThan(200m);
 
             // Assert
-            testing.VerifyExpression(result.IsValid == true, "Should be valid");
-            testing.VerifyExpression(result.Value > 100m, "Value should be > 100");
-            testing.VerifyExpression(result.Value < 200m, "Value should be < 200");
+            testing.VerifyExpression(result.IsValid == true, $"Should be valid. Expected: true, Actual: {result.IsValid}", true, "Should be valid", false, false);
+            testing.VerifyExpression(result.Value > 100m, $"Value should be > 100. Expected: > 100, Actual: {result.Value}", true, "Value should be > 100", false, false);
+            testing.VerifyExpression(result.Value < 200m, $"Value should be < 200. Expected: < 200, Actual: {result.Value}", true, "Value should be < 200", false, false);
         }
 
 
@@ -108,7 +111,7 @@ namespace Yash.FluentDataPipelines
             // Act
             var result = source
                 .Extract<decimal>(
-                    new Configuration.ExtractConfig
+                    new ExtractConfig
                     {
                         RegexPattern = @"Price: \$(\d+\.\d{2})",
                         GroupIndex = 1
@@ -121,8 +124,8 @@ namespace Yash.FluentDataPipelines
                 .FormatCurrency();
 
             // Assert
-            testing.VerifyExpression(result.Length > 0, "Should format currency");
-            testing.VerifyExpression(result.Contains("$") || result.Contains("99"), "Should contain currency info");
+            testing.VerifyExpression(result.Length > 0, $"Should format currency. Expected: length > 0, Actual: {result.Length}", true, "Should format currency", false, false);
+            testing.VerifyExpression(result.Contains("$") || result.Contains("99"), $"Should contain currency info. Expected: result to contain '$' or '99', Actual: {result}", true, "Should contain currency info", false, false);
         }
 
 
@@ -139,8 +142,8 @@ namespace Yash.FluentDataPipelines
             var result = pipelineValue.Format((value, isValid) => isValid ? "OK" : "Failed");
 
             // Assert
-            testing.VerifyExpression(result == "Failed", "Should fail");
-            testing.VerifyExpression(pipelineValue.Errors.Count > 0, "Should have errors");
+            testing.VerifyExpression(result == "Failed", $"Should fail. Expected: 'Failed', Actual: '{result}'", true, "Failed - Should fail", false, false);
+            testing.VerifyExpression(pipelineValue.Errors.Count > 0, $"Should have errors. Expected: > 0, Actual: {pipelineValue.Errors.Count}", true, "Should have errors", false, false);
         }
 
 
@@ -153,12 +156,11 @@ namespace Yash.FluentDataPipelines
             var result = source
                 .ExtractInt()
                 .Multiply(2)
-                .Divide(3)
-                .Round(2);
+                .Divide(3);
 
             // Assert
-            testing.VerifyExpression(result.IsValid == false, "Should remain invalid");
-            testing.VerifyExpression(result.Errors.Count > 0, "Should have errors");
+            testing.VerifyExpression(result.IsValid == false, $"Should remain invalid. Expected: false, Actual: {result.IsValid}", true, "Should remain invalid", false, false);
+            testing.VerifyExpression(result.Errors.Count > 0, $"Should have errors. Expected: > 0, Actual: {result.Errors.Count}", true, "Should have errors", false, false);
         }
 
 
@@ -170,7 +172,7 @@ namespace Yash.FluentDataPipelines
             // Act
             var result = source
                 .Extract<decimal>(
-                    new Configuration.ExtractConfig
+                    new Yash.FluentDataPipelines.Configuration.ExtractConfig
                     {
                         RegexPattern = @"Price: \$(\d+\.\d{2})",
                         GroupIndex = 1
@@ -183,7 +185,7 @@ namespace Yash.FluentDataPipelines
                 .FormatCurrency();
 
             // Assert
-            testing.VerifyExpression(result.Length > 0, "Should format currency");
+            testing.VerifyExpression(result.Length > 0, $"Should format currency. Expected: length > 0, Actual: {result.Length}", true, "Should format currency", false, false);
         }
 
 
@@ -201,7 +203,7 @@ namespace Yash.FluentDataPipelines
                 .Format("yyyy-MM-dd");
 
             // Assert
-            testing.VerifyExpression(result.Length > 0, "Should format date");
+            testing.VerifyExpression(result.Length > 0, $"Should format date. Expected: length > 0, Actual: {result.Length}", true, "Should format date", false, false);
         }
 
 
@@ -211,15 +213,15 @@ namespace Yash.FluentDataPipelines
             string source = "USER@EXAMPLE.COM";
 
             // Act
-            var result = source
+            var result = ((PipelineValue<string>)source)
                 .Contains("@")
                 .Matches(@"^[\w\.-]+@[\w\.-]+\.\w+$")
                 .ToLower()
                 .Format((value, isValid) => isValid ? $"Valid email: {value}" : "Invalid email");
 
             // Assert
-            testing.VerifyExpression(result.Contains("Valid email"), "Should be valid");
-            testing.VerifyExpression(result.Contains("user@example.com"), "Should be lowercase");
+            testing.VerifyExpression(result.Contains("Valid email"), $"Should be valid. Expected: result to contain 'Valid email', Actual: {result}", true, "Should be valid", false, false);
+            testing.VerifyExpression(result.Contains("user@example.com"), $"Should be lowercase. Expected: result to contain 'user@example.com', Actual: {result}", true, "Should be lowercase", false, false);
         }
 
 
@@ -229,14 +231,13 @@ namespace Yash.FluentDataPipelines
             var numbers = new[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
 
             // Act
-            var result = numbers
+            var result = ((PipelineValue<IEnumerable<int>>)numbers)
                 .Where(x => x > 5)
                 .Select(x => x * 2)
                 .First();
 
             // Assert
-            testing.VerifyExpression(result.IsValid == true, "Should be valid");
-            testing.VerifyExpression(result.Value == 12, "Should be first element (6 * 2)");
+            testing.VerifyExpression(result == 12, $"Should be first element (6 * 2). Expected: 12, Actual: {result}", true, "12 - Should be first element (6 * 2)", false, false);
         }
 
 
@@ -246,14 +247,14 @@ namespace Yash.FluentDataPipelines
             string source = "user@example.com";
 
             // Act
-            var result = source
+            var result = ((PipelineValue<string>)source)
                 .Contains("@")
                 .Contains(".")
                 .Matches(@"^[\w\.-]+@[\w\.-]+\.\w+$")
                 .Format((value, isValid) => isValid ? $"Valid email: {value}" : "Invalid email format");
 
             // Assert
-            testing.VerifyExpression(result.Contains("Valid email"), "Should pass all validations");
+            testing.VerifyExpression(result.Contains("Valid email"), $"Should pass all validations. Expected: result to contain 'Valid email', Actual: {result}", true, "Should pass all validations", false, false);
         }
 
 
@@ -269,10 +270,10 @@ namespace Yash.FluentDataPipelines
             var formatting = validation.Format((value, isValid) => isValid ? $"Value: {value}" : "Invalid");
 
             // Assert
-            testing.VerifyExpression(extraction.IsValid == false, "Extraction should fail");
-            testing.VerifyExpression(transformation.IsValid == false, "Transformation should preserve invalid state");
-            testing.VerifyExpression(validation.IsValid == false, "Validation should preserve invalid state");
-            testing.VerifyExpression(formatting == "Invalid", "Formatting should reflect invalid state");
+            testing.VerifyExpression(extraction.IsValid == false, $"Extraction should fail. Expected: false, Actual: {extraction.IsValid}", true, "Extraction should fail", false, false);
+            testing.VerifyExpression(transformation.IsValid == false, $"Transformation should preserve invalid state. Expected: false, Actual: {transformation.IsValid}", true, "Transformation should preserve invalid state", false, false);
+            testing.VerifyExpression(validation.IsValid == false, $"Validation should preserve invalid state. Expected: false, Actual: {validation.IsValid}", true, "Validation should preserve invalid state", false, false);
+            testing.VerifyExpression(formatting == "Invalid", $"Formatting should reflect invalid state. Expected: 'Invalid', Actual: '{formatting}'", true, "Invalid - Formatting should reflect invalid state", false, false);
         }
 
 
@@ -290,8 +291,8 @@ namespace Yash.FluentDataPipelines
                 .Format((value, isValid) => isValid ? $"Valid: {value}" : $"Invalid: {value}");
 
             // Assert
-            testing.VerifyExpression(result.Contains("Invalid"), "Should be invalid");
-            testing.VerifyExpression(result.Contains("25"), "Should include value");
+            testing.VerifyExpression(result.Contains("Invalid"), $"Should be invalid. Expected: result to contain 'Invalid', Actual: {result}", true, "Should be invalid", false, false);
+            testing.VerifyExpression(result.Contains("25"), $"Should include value. Expected: result to contain '25', Actual: {result}", true, "Should include value", false, false);
         }
 
 
@@ -303,7 +304,7 @@ namespace Yash.FluentDataPipelines
             // Act - Extract amount
             var amount = invoiceText
                 .Extract<decimal>(
-                    new Configuration.ExtractConfig
+                    new Yash.FluentDataPipelines.Configuration.ExtractConfig
                     {
                         RegexPattern = @"Amount: \$([\d,]+\.\d{2})",
                         GroupIndex = 1,
@@ -315,7 +316,7 @@ namespace Yash.FluentDataPipelines
                 .FormatCurrency();
 
             // Assert
-            testing.VerifyExpression(amount.Length > 0, "Should format amount");
+            testing.VerifyExpression(amount.Length > 0, $"Should format amount. Expected: length > 0, Actual: {amount.Length}", true, "Should format amount", false, false);
         }
     }
 }

@@ -4,13 +4,14 @@
   "description": "A set of extensions for strings and other data types that enables the implementation of data pipelines.",
   "main": "NewActivity.xaml",
   "dependencies": {
-    "UiPath.System.Activities": "25.10.3"
+    "UiPath.System.Activities": "25.10.3",
+    "UiPath.Testing.Activities": "25.10.0"
   },
   "webServices": [],
   "entitiesStores": [],
   "schemaVersion": "4.0",
   "studioVersion": "26.0.180.0",
-  "projectVersion": "1.0.0",
+  "projectVersion": "25.12.2",
   "runtimeOptions": {
     "autoDispose": false,
     "netFrameworkLazyLoading": false,
@@ -44,6 +45,96 @@
         "testCaseId": "b0c2548c-0400-4e78-bff8-9899bc23c9ea",
         "testCaseType": "TestCase",
         "fileName": "ExampleTest.cs"
+      },
+      {
+        "editingStatus": "Publishable",
+        "testCaseId": "a1d3659d-1511-5f89-cff9-0900cd34d0fb",
+        "testCaseType": "TestCase",
+        "fileName": "Tests/Configuration/ConfigurationTests.cs"
+      },
+      {
+        "editingStatus": "Publishable",
+        "testCaseId": "b2e4760e-2622-609a-dff0-1a11de45e1fc",
+        "testCaseType": "TestCase",
+        "fileName": "Tests/Configuration/FuzzyMatchingConfigTests.cs"
+      },
+      {
+        "editingStatus": "Publishable",
+        "testCaseId": "c3f5871f-3733-710b-eff1-2b22ef56f2fd",
+        "testCaseType": "TestCase",
+        "fileName": "Tests/Core/CrossValidationResultTests.cs"
+      },
+      {
+        "editingStatus": "Publishable",
+        "testCaseId": "d4f69820-4844-821c-f0f2-3c33f067f3fe",
+        "testCaseType": "TestCase",
+        "fileName": "Tests/Core/FuzzyMatchingAlgorithmsTests.cs"
+      },
+      {
+        "editingStatus": "Publishable",
+        "testCaseId": "e5f7a931-5955-932d-f1f3-4d44f178f4ff",
+        "testCaseType": "TestCase",
+        "fileName": "Tests/Core/NormalizationUtilitiesTests.cs"
+      },
+      {
+        "editingStatus": "Publishable",
+        "testCaseId": "f6f8b042-6a66-043e-f2f4-5e55f289f500",
+        "testCaseType": "TestCase",
+        "fileName": "Tests/Core/PipelineErrorTests.cs"
+      },
+      {
+        "editingStatus": "Publishable",
+        "testCaseId": "f7f9c153-7b77-154f-f3f5-6f66f390f601",
+        "testCaseType": "TestCase",
+        "fileName": "Tests/Core/PipelineValueTests.cs"
+      },
+      {
+        "editingStatus": "Publishable",
+        "testCaseId": "f8f0d264-8c88-2650-f4f6-7f77f401f702",
+        "testCaseType": "TestCase",
+        "fileName": "Tests/Extensions/CollectionTests.cs"
+      },
+      {
+        "editingStatus": "Publishable",
+        "testCaseId": "f9f1e375-9d99-3761-f5f7-8f88f512f803",
+        "testCaseType": "TestCase",
+        "fileName": "Tests/Extensions/FormattingTests.cs"
+      },
+      {
+        "editingStatus": "Publishable",
+        "testCaseId": "f0f2f486-0e00-4872-f6f8-9f99f623f904",
+        "testCaseType": "TestCase",
+        "fileName": "Tests/Extensions/FuzzyMatchingTests.cs"
+      },
+      {
+        "editingStatus": "Publishable",
+        "testCaseId": "f1f3f597-1f11-5983-f7f9-0f00f734f005",
+        "testCaseType": "TestCase",
+        "fileName": "Tests/Extensions/StringExtractionTests.cs"
+      },
+      {
+        "editingStatus": "Publishable",
+        "testCaseId": "f2f4f608-2a22-6094-f8f0-1f11f845f106",
+        "testCaseType": "TestCase",
+        "fileName": "Tests/Extensions/TransformationTests.cs"
+      },
+      {
+        "editingStatus": "Publishable",
+        "testCaseId": "f3f5f719-3b33-7105-f9f1-2f22f956f207",
+        "testCaseType": "TestCase",
+        "fileName": "Tests/Extensions/ValidationTests.cs"
+      },
+      {
+        "editingStatus": "Publishable",
+        "testCaseId": "f4f6f820-4c44-8216-f0f2-3f33f067f308",
+        "testCaseType": "TestCase",
+        "fileName": "Tests/Integration/FuzzyMatchingIntegrationTests.cs"
+      },
+      {
+        "editingStatus": "Publishable",
+        "testCaseId": "f5f7f931-5d55-9327-f1f3-4f44f178f409",
+        "testCaseType": "TestCase",
+        "fileName": "Tests/Integration/IntegrationTests.cs"
       }
     ],
     "saveToCloud": false

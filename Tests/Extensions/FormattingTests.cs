@@ -6,7 +6,7 @@ using Yash.FluentDataPipelines.Configuration;
 using Yash.FluentDataPipelines.Core;
 using Yash.FluentDataPipelines.Extensions;
 
-namespace Yash.FluentDataPipelines
+namespace Yash.FluentDataPipelines.Tests.Extensions
 {
     public class FormattingTests : CodedWorkflow
     {
@@ -44,7 +44,7 @@ namespace Yash.FluentDataPipelines
             var result = pipelineValue.Format();
 
             // Assert
-            testing.VerifyExpression(result == "42", "Should format to string");
+            testing.VerifyExpression(result == "42", $"Should format to string. Expected: '42', Actual: '{result}'", true, "Should format to string", false, false);
         }
 
 
@@ -58,7 +58,7 @@ namespace Yash.FluentDataPipelines
             var result = pipelineValue.Format("yyyy-MM-dd");
 
             // Assert
-            testing.VerifyExpression(result == "2024-12-10", "Should format with format string");
+            testing.VerifyExpression(result == "2024-12-10", $"Should format with format string. Expected: '2024-12-10', Actual: '{result}'", true, "Should format with format string", false, false);
         }
 
 
@@ -71,7 +71,7 @@ namespace Yash.FluentDataPipelines
             var result = pipelineValue.Format(value => $"Count: {value}");
 
             // Assert
-            testing.VerifyExpression(result == "Count: 42", "Should use custom formatter");
+            testing.VerifyExpression(result == "Count: 42", $"Should use custom formatter. Expected: 'Count: 42', Actual: '{result}'", true, "Should use custom formatter", false, false);
         }
 
 
@@ -86,8 +86,8 @@ namespace Yash.FluentDataPipelines
             var invalidResult = invalidValue.Format((value, isValid) => isValid ? $"Valid: {value}" : "Invalid");
 
             // Assert
-            testing.VerifyExpression(validResult == "Valid: 42", "Valid value should format correctly");
-            testing.VerifyExpression(invalidResult == "Invalid", "Invalid value should format correctly");
+            testing.VerifyExpression(validResult == "Valid: 42", $"Valid value should format correctly. Expected: 'Valid: 42', Actual: '{validResult}'", true, "Valid value should format correctly", false, false);
+            testing.VerifyExpression(invalidResult == "Invalid", $"Invalid value should format correctly. Expected: 'Invalid', Actual: '{invalidResult}'", true, "Invalid value should format correctly", false, false);
         }
 
 
@@ -101,7 +101,7 @@ namespace Yash.FluentDataPipelines
             var result = pipelineValue.Format(config);
 
             // Assert
-            testing.VerifyExpression(result == "NULL", "Should use NullValueString");
+            testing.VerifyExpression(result == "NULL", $"Should use NullValueString. Expected: 'NULL', Actual: '{result}'", true, "Should use NullValueString", false, false);
         }
 
 
@@ -115,7 +115,7 @@ namespace Yash.FluentDataPipelines
             var result = pipelineValue.Format(config);
 
             // Assert
-            testing.VerifyExpression(result == "INVALID", "Should use InvalidValueString");
+            testing.VerifyExpression(result == "INVALID", $"Should use InvalidValueString. Expected: 'INVALID', Actual: '{result}'", true, "Should use InvalidValueString", false, false);
         }
 
 
@@ -128,7 +128,7 @@ namespace Yash.FluentDataPipelines
             var result = pipelineValue.Format();
 
             // Assert
-            testing.VerifyExpression(result == "null", "Should return 'null' string");
+            testing.VerifyExpression(result == "null", $"Should return 'null' string. Expected: 'null', Actual: '{result}'", true, "Should return 'null' string", false, false);
         }
 
 
@@ -143,7 +143,7 @@ namespace Yash.FluentDataPipelines
             var result = pipelineValue.Format(config);
 
             // Assert
-            testing.VerifyExpression(result == "2024-12-10", "Should format IFormattable type");
+            testing.VerifyExpression(result == "2024-12-10", $"Should format IFormattable type. Expected: '2024-12-10', Actual: '{result}'", true, "Should format IFormattable type", false, false);
         }
 
 
@@ -157,7 +157,7 @@ namespace Yash.FluentDataPipelines
             var result = pipelineValue.FormatDate();
 
             // Assert
-            testing.VerifyExpression(result.Length > 0, "Should format date");
+            testing.VerifyExpression(result.Length > 0, $"Should format date. Expected: length > 0, Actual: {result.Length}", true, "Should format date", false, false);
         }
 
 
@@ -171,7 +171,7 @@ namespace Yash.FluentDataPipelines
             var result = pipelineValue.FormatDate("yyyy-MM-dd");
 
             // Assert
-            testing.VerifyExpression(result == "2024-12-10", "Should format with custom format");
+            testing.VerifyExpression(result == "2024-12-10", $"Should format with custom format. Expected: '2024-12-10', Actual: '{result}'", true, "Should format with custom format", false, false);
         }
 
 
@@ -188,7 +188,7 @@ namespace Yash.FluentDataPipelines
             // Assert
             // Note: FormatDate doesn't use config, so it will format the date even if invalid
             // This tests the behavior
-            testing.VerifyExpression(result.Length > 0, "Should still format date");
+            testing.VerifyExpression(result.Length > 0, $"Should still format date. Expected: length > 0, Actual: {result.Length}", true, "Should still format date", false, false);
         }
 
 
@@ -201,8 +201,8 @@ namespace Yash.FluentDataPipelines
             var result = pipelineValue.FormatNumber();
 
             // Assert
-            testing.VerifyExpression(result.Contains("99"), "Should format number");
-            testing.VerifyExpression(result.Contains("."), "Should include decimal");
+            testing.VerifyExpression(result.Contains("100"), $"Should format number. Expected: result to contain '100', Actual: '{result}'", true, "Should format number", false, false);
+            testing.VerifyExpression(result.Contains("."), $"Should include decimal. Expected: result to contain '.', Actual: '{result}'", true, "Should include decimal", false, false);
         }
 
 
@@ -215,7 +215,7 @@ namespace Yash.FluentDataPipelines
             var result = pipelineValue.FormatNumber("F0");
 
             // Assert
-            testing.VerifyExpression(result == "100", "Should format with custom format");
+            testing.VerifyExpression(result == "100", $"Should format with custom format. Expected: '100', Actual: '{result}'", true, "Should format with custom format", false, false);
         }
 
 
@@ -232,9 +232,9 @@ namespace Yash.FluentDataPipelines
             var decimalResult = decimalValue.FormatNumber("N1");
 
             // Assert
-            testing.VerifyExpression(intResult.Contains("42"), "Int should format");
-            testing.VerifyExpression(doubleResult.Contains("42"), "Double should format");
-            testing.VerifyExpression(decimalResult.Contains("42"), "Decimal should format");
+            testing.VerifyExpression(intResult.Contains("42"), $"Int should format. Expected: result to contain '42', Actual: '{intResult}'", true, "Int should format", false, false);
+            testing.VerifyExpression(doubleResult.Contains("42"), $"Double should format. Expected: result to contain '42', Actual: '{doubleResult}'", true, "Double should format", false, false);
+            testing.VerifyExpression(decimalResult.Contains("42"), $"Decimal should format. Expected: result to contain '42', Actual: '{decimalResult}'", true, "Decimal should format", false, false);
         }
 
 
@@ -247,8 +247,8 @@ namespace Yash.FluentDataPipelines
             var result = pipelineValue.FormatCurrency();
 
             // Assert
-            testing.VerifyExpression(result.Length > 0, "Should format currency");
-            testing.VerifyExpression(result.Contains("99"), "Should contain value");
+            testing.VerifyExpression(result.Length > 0, $"Should format currency. Expected: length > 0, Actual: {result.Length}", true, "Should format currency", false, false);
+            testing.VerifyExpression(result.Contains("99"), $"Should contain value. Expected: result to contain '99', Actual: '{result}'", true, "Should contain value", false, false);
         }
 
 
@@ -262,8 +262,8 @@ namespace Yash.FluentDataPipelines
             var result = pipelineValue.FormatCurrency(culture);
 
             // Assert
-            testing.VerifyExpression(result.Length > 0, "Should format currency");
-            testing.VerifyExpression(result.Contains("$") || result.Contains("99"), "Should contain currency symbol or value");
+            testing.VerifyExpression(result.Length > 0, $"Should format currency. Expected: length > 0, Actual: {result.Length}", true, "Should format currency", false, false);
+            testing.VerifyExpression(result.Contains("$") || result.Contains("99"), $"Should contain currency symbol or value. Expected: result to contain '$' or '99', Actual: {result}", true, "Should contain currency symbol or value", false, false);
         }
 
 
@@ -280,9 +280,9 @@ namespace Yash.FluentDataPipelines
             var decimalResult = decimalValue.FormatCurrency();
 
             // Assert
-            testing.VerifyExpression(intResult.Length > 0, "Int should format");
-            testing.VerifyExpression(doubleResult.Length > 0, "Double should format");
-            testing.VerifyExpression(decimalResult.Length > 0, "Decimal should format");
+            testing.VerifyExpression(intResult.Length > 0, $"Int should format. Expected: length > 0, Actual: {intResult.Length}", true, "Int should format", false, false);
+            testing.VerifyExpression(doubleResult.Length > 0, $"Double should format. Expected: length > 0, Actual: {doubleResult.Length}", true, "Double should format", false, false);
+            testing.VerifyExpression(decimalResult.Length > 0, $"Decimal should format. Expected: length > 0, Actual: {decimalResult.Length}", true, "Decimal should format", false, false);
         }
 
 
@@ -300,7 +300,7 @@ namespace Yash.FluentDataPipelines
             var result = pipelineValue.Format(config);
 
             // Assert
-            testing.VerifyExpression(result == "Custom: 42", "Custom formatter should take precedence");
+            testing.VerifyExpression(result == "Custom: 42", $"Custom formatter should take precedence. Expected: 'Custom: 42', Actual: '{result}'", true, "Custom formatter should take precedence", false, false);
         }
 
 
@@ -319,7 +319,7 @@ namespace Yash.FluentDataPipelines
             var result = pipelineValue.Format(config);
 
             // Assert
-            testing.VerifyExpression(result.Contains("Validation"), "CustomFormatterWithValidation should take precedence");
+            testing.VerifyExpression(result.Contains("Validation"), $"CustomFormatterWithValidation should take precedence. Expected: result to contain 'Validation', Actual: '{result}'", true, "CustomFormatterWithValidation should take precedence", false, false);
         }
 
 
@@ -336,7 +336,7 @@ namespace Yash.FluentDataPipelines
             var result = pipelineValue.Format(config);
 
             // Assert
-            testing.VerifyExpression(result == "Invalid: 42", "Should use CustomFormatterWithValidation for invalid");
+            testing.VerifyExpression(result == "Invalid: 42", $"Should use CustomFormatterWithValidation for invalid. Expected: 'Invalid: 42', Actual: '{result}'", true, "Should use CustomFormatterWithValidation for invalid", false, false);
         }
     }
 }

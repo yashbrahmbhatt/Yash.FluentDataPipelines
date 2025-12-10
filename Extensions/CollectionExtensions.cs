@@ -59,17 +59,7 @@ namespace Yash.FluentDataPipelines.Extensions
             TransformationConfig config = null)
         {
             config = config ?? TransformationConfig.Default;
-            return pipelineValue.Transform(config, (collection, cfg) =>
-            {
-                try
-                {
-                    return collection.First();
-                }
-                catch (InvalidOperationException)
-                {
-                    throw new InvalidOperationException("Sequence contains no elements");
-                }
-            });
+            return pipelineValue.Transform(config, (collection, cfg) => collection.First());
         }
 
         /// <summary>
@@ -86,7 +76,8 @@ namespace Yash.FluentDataPipelines.Extensions
             TransformationConfig config = null)
         {
             config = config ?? TransformationConfig.Default;
-            return pipelineValue.Transform(config, (collection, cfg) => collection.FirstOrDefault());
+            return pipelineValue.Transform(config, (collection, cfg) => 
+                collection.Any() ? collection.First() : defaultValue);
         }
 
         /// <summary>
@@ -101,17 +92,7 @@ namespace Yash.FluentDataPipelines.Extensions
             TransformationConfig config = null)
         {
             config = config ?? TransformationConfig.Default;
-            return pipelineValue.Transform(config, (collection, cfg) =>
-            {
-                try
-                {
-                    return collection.Last();
-                }
-                catch (InvalidOperationException)
-                {
-                    throw new InvalidOperationException("Sequence contains no elements");
-                }
-            });
+            return pipelineValue.Transform(config, (collection, cfg) => collection.Last());
         }
 
         /// <summary>
@@ -128,7 +109,8 @@ namespace Yash.FluentDataPipelines.Extensions
             TransformationConfig config = null)
         {
             config = config ?? TransformationConfig.Default;
-            return pipelineValue.Transform(config, (collection, cfg) => collection.LastOrDefault());
+            return pipelineValue.Transform(config, (collection, cfg) => 
+                collection.Any() ? collection.Last() : defaultValue);
         }
 
         /// <summary>

@@ -7,7 +7,7 @@ using Yash.FluentDataPipelines.Configuration;
 using Yash.FluentDataPipelines.Core;
 using Yash.FluentDataPipelines.Extensions;
 
-namespace Yash.FluentDataPipelines
+namespace Yash.FluentDataPipelines.Tests.Extensions
 {
     public class CollectionTests : CodedWorkflow
     {
@@ -51,8 +51,8 @@ namespace Yash.FluentDataPipelines
             var result = pipelineValue.Transform(config, (collection, cfg) => collection.Sum());
 
             // Assert
-            testing.VerifyExpression(result.IsValid == true, "Should be valid");
-            testing.VerifyExpression(result.Value == 15, "Sum should be 15");
+            testing.VerifyExpression(result.IsValid == true, $"Should be valid. Expected: true, Actual: {result.IsValid}", true, "Should be valid", false, false);
+            testing.VerifyExpression(result.Value == 15, $"Sum should be 15. Expected: 15, Actual: {result.Value}", true, "Sum should be 15", false, false);
         }
 
 
@@ -67,8 +67,8 @@ namespace Yash.FluentDataPipelines
             var result = pipelineValue.Transform(config, (collection, cfg) => collection.Sum());
 
             // Assert
-            testing.VerifyExpression(result.IsValid == false, "Should remain invalid");
-            testing.VerifyExpression(result.Errors.Count > 0, "Should preserve errors");
+            testing.VerifyExpression(result.IsValid == false, $"Should remain invalid. Expected: false, Actual: {result.IsValid}", true, "Should remain invalid", false, false);
+            testing.VerifyExpression(result.Errors.Count > 0, $"Should preserve errors. Expected: > 0, Actual: {result.Errors.Count}", true, "Should preserve errors", false, false);
         }
 
 
@@ -82,7 +82,7 @@ namespace Yash.FluentDataPipelines
             var result = pipelineValue.Transform(config, (collection, cfg) => collection.Sum());
 
             // Assert
-            testing.VerifyExpression(result.IsValid == false, "Should be invalid");
+            testing.VerifyExpression(result.IsValid == false, $"Should be invalid. Expected: false, Actual: {result.IsValid}", true, "Should be invalid", false, false);
         }
 
 
@@ -97,8 +97,8 @@ namespace Yash.FluentDataPipelines
             var result = pipelineValue.Transform(config, (collection, cfg) => throw new Exception("Transform error"));
 
             // Assert
-            testing.VerifyExpression(result.IsValid == false, "Should be invalid");
-            testing.VerifyExpression(result.Errors.Count > 0, "Should have error");
+            testing.VerifyExpression(result.IsValid == false, $"Should be invalid. Expected: false, Actual: {result.IsValid}", true, "Should be invalid", false, false);
+            testing.VerifyExpression(result.Errors.Count > 0, $"Should have error. Expected: > 0, Actual: {result.Errors.Count}", true, "Should have error", false, false);
         }
 
 
@@ -112,9 +112,9 @@ namespace Yash.FluentDataPipelines
             var result = pipelineValue.Where(x => x > 2);
 
             // Assert
-            testing.VerifyExpression(result.IsValid == true, "Should be valid");
-            testing.VerifyExpression(result.Value.Count() == 3, "Should have 3 elements");
-            testing.VerifyExpression(result.Value.All(x => x > 2), "All elements should be > 2");
+            testing.VerifyExpression(result.IsValid == true, $"Should be valid. Expected: true, Actual: {result.IsValid}", true, "Should be valid", false, false);
+            testing.VerifyExpression(result.Value.Count() == 3, $"Should have 3 elements. Expected: 3, Actual: {result.Value.Count()}", true, "Should have 3 elements", false, false);
+            testing.VerifyExpression(result.Value.All(x => x > 2), $"All elements should be > 2. Expected: true, Actual: {result.Value.All(x => x > 2)}", true, "All elements should be > 2", false, false);
         }
 
 
@@ -128,8 +128,8 @@ namespace Yash.FluentDataPipelines
             var result = pipelineValue.Where(x => x > 2);
 
             // Assert
-            testing.VerifyExpression(result.IsValid == true, "Should be valid");
-            testing.VerifyExpression(result.Value.Count() == 0, "Should be empty");
+            testing.VerifyExpression(result.IsValid == true, $"Should be valid. Expected: true, Actual: {result.IsValid}", true, "Should be valid", false, false);
+            testing.VerifyExpression(result.Value.Count() == 0, $"Should be empty. Expected: 0, Actual: {result.Value.Count()}", true, "Should be empty", false, false);
         }
 
 
@@ -143,8 +143,8 @@ namespace Yash.FluentDataPipelines
             var result = pipelineValue.Where(x => x > 10);
 
             // Assert
-            testing.VerifyExpression(result.IsValid == true, "Should be valid");
-            testing.VerifyExpression(result.Value.Count() == 0, "Should have no matches");
+            testing.VerifyExpression(result.IsValid == true, $"Should be valid. Expected: true, Actual: {result.IsValid}", true, "Should be valid", false, false);
+            testing.VerifyExpression(result.Value.Count() == 0, $"Should have no matches. Expected: 0, Actual: {result.Value.Count()}", true, "Should have no matches", false, false);
         }
 
 
@@ -158,8 +158,8 @@ namespace Yash.FluentDataPipelines
             var result = pipelineValue.Where(x => x > 0);
 
             // Assert
-            testing.VerifyExpression(result.IsValid == true, "Should be valid");
-            testing.VerifyExpression(result.Value.Count() == 3, "Should have all matches");
+            testing.VerifyExpression(result.IsValid == true, $"Should be valid. Expected: true, Actual: {result.IsValid}", true, "Should be valid", false, false);
+            testing.VerifyExpression(result.Value.Count() == 3, $"Should have all matches. Expected: 3, Actual: {result.Value.Count()}", true, "Should have all matches", false, false);
         }
 
 
@@ -173,8 +173,8 @@ namespace Yash.FluentDataPipelines
             var result = pipelineValue.Select(x => x * 2);
 
             // Assert
-            testing.VerifyExpression(result.IsValid == true, "Should be valid");
-            testing.VerifyExpression(result.Value.SequenceEqual(new[] { 2, 4, 6 }), "Should project correctly");
+            testing.VerifyExpression(result.IsValid == true, $"Should be valid. Expected: true, Actual: {result.IsValid}", true, "Should be valid", false, false);
+            testing.VerifyExpression(result.Value.SequenceEqual(new[] { 2, 4, 6 }), $"Should project correctly. Expected: [2, 4, 6], Actual: [{string.Join(", ", result.Value)}]", true, "Should project correctly", false, false);
         }
 
 
@@ -188,8 +188,8 @@ namespace Yash.FluentDataPipelines
             var result = pipelineValue.Select(x => x * 2);
 
             // Assert
-            testing.VerifyExpression(result.IsValid == true, "Should be valid");
-            testing.VerifyExpression(result.Value.Count() == 0, "Should be empty");
+            testing.VerifyExpression(result.IsValid == true, $"Should be valid. Expected: true, Actual: {result.IsValid}", true, "Should be valid", false, false);
+            testing.VerifyExpression(result.Value.Count() == 0, $"Should be empty. Expected: 0, Actual: {result.Value.Count()}", true, "Should be empty", false, false);
         }
 
 
@@ -203,8 +203,8 @@ namespace Yash.FluentDataPipelines
             var result = pipelineValue.Select(x => x.ToString());
 
             // Assert
-            testing.VerifyExpression(result.IsValid == true, "Should be valid");
-            testing.VerifyExpression(result.Value.SequenceEqual(new[] { "1", "2", "3" }), "Should convert types");
+            testing.VerifyExpression(result.IsValid == true, $"Should be valid. Expected: true, Actual: {result.IsValid}", true, "Should be valid", false, false);
+            testing.VerifyExpression(result.Value.SequenceEqual(new[] { "1", "2", "3" }), $"Should convert types. Expected: ['1', '2', '3'], Actual: [{string.Join(", ", result.Value.Select(s => $"'{s}'"))}]", true, "Should convert types", false, false);
         }
 
 
@@ -218,8 +218,8 @@ namespace Yash.FluentDataPipelines
             var result = pipelineValue.First();
 
             // Assert
-            testing.VerifyExpression(result.IsValid == true, "Should be valid");
-            testing.VerifyExpression(result.Value == 1, "Should return first element");
+            testing.VerifyExpression(result.IsValid == true, $"Should be valid. Expected: true, Actual: {result.IsValid}", true, "Should be valid", false, false);
+            testing.VerifyExpression(result.Value == 1, $"Should return first element. Expected: 1, Actual: {result.Value}", true, "Should return first element", false, false);
         }
 
 
@@ -233,8 +233,8 @@ namespace Yash.FluentDataPipelines
             var result = pipelineValue.First();
 
             // Assert
-            testing.VerifyExpression(result.IsValid == false, "Should be invalid");
-            testing.VerifyExpression(result.Errors.Count > 0, "Should have error");
+            testing.VerifyExpression(result.IsValid == false, $"Should be invalid. Expected: false, Actual: {result.IsValid}", true, "Should be invalid", false, false);
+            testing.VerifyExpression(result.Errors.Count > 0, $"Should have error. Expected: > 0, Actual: {result.Errors.Count}", true, "Should have error", false, false);
         }
 
 
@@ -248,7 +248,7 @@ namespace Yash.FluentDataPipelines
             var result = pipelineValue.First();
 
             // Assert
-            testing.VerifyExpression(result.IsValid == false, "Should remain invalid");
+            testing.VerifyExpression(result.IsValid == false, $"Should remain invalid. Expected: false, Actual: {result.IsValid}", true, "Should remain invalid", false, false);
         }
 
 
@@ -262,8 +262,8 @@ namespace Yash.FluentDataPipelines
             var result = pipelineValue.FirstOrDefault();
 
             // Assert
-            testing.VerifyExpression(result.IsValid == true, "Should be valid");
-            testing.VerifyExpression(result.Value == 1, "Should return first element");
+            testing.VerifyExpression(result.IsValid == true, $"Should be valid. Expected: true, Actual: {result.IsValid}", true, "Should be valid", false, false);
+            testing.VerifyExpression(result.Value == 1, $"Should return first element. Expected: 1, Actual: {result.Value}", true, "Should return first element", false, false);
         }
 
 
@@ -277,8 +277,8 @@ namespace Yash.FluentDataPipelines
             var result = pipelineValue.FirstOrDefault();
 
             // Assert
-            testing.VerifyExpression(result.IsValid == true, "Should be valid");
-            testing.VerifyExpression(result.Value == 0, "Should return default(int)");
+            testing.VerifyExpression(result.IsValid == true, $"Should be valid. Expected: true, Actual: {result.IsValid}", true, "Should be valid", false, false);
+            testing.VerifyExpression(result.Value == 0, $"Should return default(int). Expected: 0, Actual: {result.Value}", true, "Should return default(int)", false, false);
         }
 
 
@@ -292,8 +292,8 @@ namespace Yash.FluentDataPipelines
             var result = pipelineValue.FirstOrDefault(-1);
 
             // Assert
-            testing.VerifyExpression(result.IsValid == true, "Should be valid");
-            testing.VerifyExpression(result.Value == -1, "Should return custom default");
+            testing.VerifyExpression(result.IsValid == true, $"Should be valid. Expected: true, Actual: {result.IsValid}", true, "Should be valid", false, false);
+            testing.VerifyExpression(result.Value == -1, $"Should return custom default. Expected: -1, Actual: {result.Value}", true, "Should return custom default", false, false);
         }
 
 
@@ -307,8 +307,8 @@ namespace Yash.FluentDataPipelines
             var result = pipelineValue.Last();
 
             // Assert
-            testing.VerifyExpression(result.IsValid == true, "Should be valid");
-            testing.VerifyExpression(result.Value == 5, "Should return last element");
+            testing.VerifyExpression(result.IsValid == true, $"Should be valid. Expected: true, Actual: {result.IsValid}", true, "Should be valid", false, false);
+            testing.VerifyExpression(result.Value == 5, $"Should return last element. Expected: 5, Actual: {result.Value}", true, "Should return last element", false, false);
         }
 
 
@@ -322,8 +322,8 @@ namespace Yash.FluentDataPipelines
             var result = pipelineValue.Last();
 
             // Assert
-            testing.VerifyExpression(result.IsValid == false, "Should be invalid");
-            testing.VerifyExpression(result.Errors.Count > 0, "Should have error");
+            testing.VerifyExpression(result.IsValid == false, $"Should be invalid. Expected: false, Actual: {result.IsValid}", true, "Should be invalid", false, false);
+            testing.VerifyExpression(result.Errors.Count > 0, $"Should have error. Expected: > 0, Actual: {result.Errors.Count}", true, "Should have error", false, false);
         }
 
 
@@ -337,7 +337,7 @@ namespace Yash.FluentDataPipelines
             var result = pipelineValue.Last();
 
             // Assert
-            testing.VerifyExpression(result.IsValid == false, "Should remain invalid");
+            testing.VerifyExpression(result.IsValid == false, $"Should remain invalid. Expected: false, Actual: {result.IsValid}", true, "Should remain invalid", false, false);
         }
 
 
@@ -351,8 +351,8 @@ namespace Yash.FluentDataPipelines
             var result = pipelineValue.LastOrDefault();
 
             // Assert
-            testing.VerifyExpression(result.IsValid == true, "Should be valid");
-            testing.VerifyExpression(result.Value == 5, "Should return last element");
+            testing.VerifyExpression(result.IsValid == true, $"Should be valid. Expected: true, Actual: {result.IsValid}", true, "Should be valid", false, false);
+            testing.VerifyExpression(result.Value == 5, $"Should return last element. Expected: 5, Actual: {result.Value}", true, "Should return last element", false, false);
         }
 
 
@@ -366,8 +366,8 @@ namespace Yash.FluentDataPipelines
             var result = pipelineValue.LastOrDefault();
 
             // Assert
-            testing.VerifyExpression(result.IsValid == true, "Should be valid");
-            testing.VerifyExpression(result.Value == 0, "Should return default(int)");
+            testing.VerifyExpression(result.IsValid == true, $"Should be valid. Expected: true, Actual: {result.IsValid}", true, "Should be valid", false, false);
+            testing.VerifyExpression(result.Value == 0, $"Should return default(int). Expected: 0, Actual: {result.Value}", true, "Should return default(int)", false, false);
         }
 
 
@@ -381,8 +381,8 @@ namespace Yash.FluentDataPipelines
             var result = pipelineValue.LastOrDefault(-1);
 
             // Assert
-            testing.VerifyExpression(result.IsValid == true, "Should be valid");
-            testing.VerifyExpression(result.Value == -1, "Should return custom default");
+            testing.VerifyExpression(result.IsValid == true, $"Should be valid. Expected: true, Actual: {result.IsValid}", true, "Should be valid", false, false);
+            testing.VerifyExpression(result.Value == -1, $"Should return custom default. Expected: -1, Actual: {result.Value}", true, "Should return custom default", false, false);
         }
 
 
@@ -399,8 +399,8 @@ namespace Yash.FluentDataPipelines
                 .First();
 
             // Assert
-            testing.VerifyExpression(result.IsValid == true, "Should be valid");
-            testing.VerifyExpression(result.Value == 6, "Should be first element after filter and transform");
+            testing.VerifyExpression(result.IsValid == true, $"Should be valid. Expected: true, Actual: {result.IsValid}", true, "Should be valid", false, false);
+            testing.VerifyExpression(result.Value == 6, $"Should be first element after filter and transform. Expected: 6, Actual: {result.Value}", true, "Should be first element after filter and transform", false, false);
         }
     }
 }
