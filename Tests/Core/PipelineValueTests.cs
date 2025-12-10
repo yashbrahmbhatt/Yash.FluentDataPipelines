@@ -1,0 +1,275 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using UiPath.Activities.System.Jobs.Coded;
+using UiPath.CodedWorkflows;
+using Yash.FluentDataPipelines.Core;
+
+namespace Yash.FluentDataPipelines
+{
+    public class PipelineValueTests : CodedWorkflow
+    {
+        [TestCase]
+        public void Execute()
+        {
+            Constructor_WithValueOnly_DefaultsToValid();
+            Constructor_WithValueAndIsValid_SetsCorrectly();
+            Constructor_WithErrors_SetsErrorsCorrectly();
+            Constructor_WithNullErrors_DefaultsToEmpty();
+            Properties_AreReadOnly_Immutability();
+            WithValue_TransformsValue_PreservesValidationState();
+            WithValue_PreservesErrors();
+            WithValidation_PassingValidation_RemainsValid();
+            WithValidation_FailingValidation_BecomesInvalid();
+            WithValidation_MultipleValidations_AllMustPass();
+            WithValidation_OnInvalidValue_StaysInvalid();
+            WithError_AddsSingleError();
+            WithError_AddsMultipleErrors();
+            WithError_SetsIsValidToFalse();
+            WithError_ErrorsCollectionGrows();
+            ImplicitConversion_PipelineValueToT();
+            ImplicitConversion_TToPipelineValue();
+            ImplicitConversion_NullHandling();
+        }
+
+        public void Constructor_WithValueOnly_DefaultsToValid()
+        {
+            // Arrange & Act
+            var pipelineValue = new PipelineValue<string>("test");
+
+            // Assert
+            testing.VerifyExpression(pipelineValue.Value == "test", "Value should be 'test'");
+            testing.VerifyExpression(pipelineValue.IsValid == true, "IsValid should default to true");
+            testing.VerifyExpression(pipelineValue.Errors.Count == 0, "Errors should be empty");
+        }
+
+        public void Constructor_WithValueAndIsValid_SetsCorrectly()
+        {
+            // Arrange & Act
+            var validValue = new PipelineValue<string>("test", true);
+            var invalidValue = new PipelineValue<string>("test", false);
+
+            // Assert
+            testing.VerifyExpression(validValue.IsValid == true, "Valid value should have IsValid = true");
+            testing.VerifyExpression(invalidValue.IsValid == false, "Invalid value should have IsValid = false");
+        }
+
+        public void Constructor_WithErrors_SetsErrorsCorrectly()
+        {
+            // Arrange
+            var errors = new[] { new PipelineError("Error 1", "Op1"), new PipelineError("Error 2", "Op2") };
+
+            // Act
+            var pipelineValue = new PipelineValue<string>("test", false, errors);
+
+            // Assert
+            testing.VerifyExpression(pipelineValue.Errors.Count == 2, "Should have 2 errors");
+            testing.VerifyExpression(pipelineValue.Errors[0].Message == "Error 1", "First error message should match");
+            testing.VerifyExpression(pipelineValue.Errors[1].Message == "Error 2", "Second error message should match");
+        }
+
+        public void Constructor_WithNullErrors_DefaultsToEmpty()
+        {
+            // Arrange & Act
+            var pipelineValue = new PipelineValue<string>("test", true, null);
+
+            // Assert
+            testing.VerifyExpression(pipelineValue.Errors.Count == 0, "Errors should default to empty when null");
+        }
+
+        public void Properties_AreReadOnly_Immutability()
+        {
+            // Arrange
+            var pipelineValue = new PipelineValue<string>("test");
+
+            // Act & Assert
+            // Properties should be read-only, so we can't modify them directly
+            // This test verifies the structure is immutable
+            testing.VerifyExpression(pipelineValue.Value == "test", "Value should remain unchanged");
+            var newValue = pipelineValue.WithValue("new");
+            testing.VerifyExpression(pipelineValue.Value == "test", "Original value should remain unchanged");
+            testing.VerifyExpression(newValue.Value == "new", "New value should be different");
+        }
+
+        public void WithValue_TransformsValue_PreservesValidationState()
+        {
+            // Arrange
+            var original = new PipelineValue<string>("test", true);
+
+            // Act
+            var transformed = original.WithValue<int>(42);
+
+            // Assert
+            testing.VerifyExpression(transformed.Value == 42, "Value should be transformed");
+            testing.VerifyExpression(transformed.IsValid == true, "Validation state should be preserved");
+            testing.VerifyExpression(transformed.Errors.Count == 0, "Errors should be preserved");
+        }
+
+        public void WithValue_PreservesErrors()
+        {
+            // Arrange
+            var error = new PipelineError("Test error", "TestOp");
+            var original = new PipelineValue<string>("test", false, new[] { error });
+
+            // Act
+            var transformed = original.WithValue<int>(42);
+
+            // Assert
+            testing.VerifyExpression(transformed.Errors.Count == 1, "Errors should be preserved");
+            testing.VerifyExpression(transformed.Errors[0].Message == "Test error", "Error message should be preserved");
+            testing.VerifyExpression(transformed.IsValid == false, "Invalid state should be preserved");
+        }
+
+        public void WithValidation_PassingValidation_RemainsValid()
+        {
+            // Arrange
+            var original = new PipelineValue<int>(42, true);
+
+            // Act
+            var result = original.WithValidation(true);
+
+            // Assert
+            testing.VerifyExpression(result.IsValid == true, "Should remain valid");
+            testing.VerifyExpression(result.Errors.Count == 0, "Should have no errors");
+        }
+
+        public void WithValidation_FailingValidation_BecomesInvalid()
+        {
+            // Arrange
+            var original = new PipelineValue<int>(42, true);
+            var error = new PipelineError("Validation failed", "Validate");
+
+            // Act
+            var result = original.WithValidation(false, error);
+
+            // Assert
+            testing.VerifyExpression(result.IsValid == false, "Should become invalid");
+            testing.VerifyExpression(result.Errors.Count == 1, "Should have one error");
+            testing.VerifyExpression(result.Errors[0].Message == "Validation failed", "Error message should match");
+        }
+
+        public void WithValidation_MultipleValidations_AllMustPass()
+        {
+            // Arrange
+            var original = new PipelineValue<int>(42, true);
+            var error1 = new PipelineError("First validation failed", "Validate1");
+
+            // Act
+            var afterFirst = original.WithValidation(false, error1);
+            var afterSecond = afterFirst.WithValidation(true);
+
+            // Assert
+            testing.VerifyExpression(afterSecond.IsValid == false, "Should remain invalid if any validation failed");
+            testing.VerifyExpression(afterSecond.Errors.Count == 1, "Should have one error");
+        }
+
+        public void WithValidation_OnInvalidValue_StaysInvalid()
+        {
+            // Arrange
+            var original = new PipelineValue<int>(42, false, new[] { new PipelineError("Original error", "Op1") });
+
+            // Act
+            var result = original.WithValidation(true);
+
+            // Assert
+            testing.VerifyExpression(result.IsValid == false, "Should stay invalid");
+            testing.VerifyExpression(result.Errors.Count == 1, "Original error should be preserved");
+        }
+
+        public void WithError_AddsSingleError()
+        {
+            // Arrange
+            var original = new PipelineValue<string>("test", true);
+            var error = new PipelineError("Test error", "TestOp");
+
+            // Act
+            var result = original.WithError(error);
+
+            // Assert
+            testing.VerifyExpression(result.IsValid == false, "Should become invalid");
+            testing.VerifyExpression(result.Errors.Count == 1, "Should have one error");
+            testing.VerifyExpression(result.Errors[0].Message == "Test error", "Error message should match");
+        }
+
+        public void WithError_AddsMultipleErrors()
+        {
+            // Arrange
+            var original = new PipelineValue<string>("test", true);
+            var error1 = new PipelineError("Error 1", "Op1");
+            var error2 = new PipelineError("Error 2", "Op2");
+
+            // Act
+            var afterFirst = original.WithError(error1);
+            var afterSecond = afterFirst.WithError(error2);
+
+            // Assert
+            testing.VerifyExpression(afterSecond.Errors.Count == 2, "Should have two errors");
+            testing.VerifyExpression(afterSecond.Errors[0].Message == "Error 1", "First error should match");
+            testing.VerifyExpression(afterSecond.Errors[1].Message == "Error 2", "Second error should match");
+        }
+
+        public void WithError_SetsIsValidToFalse()
+        {
+            // Arrange
+            var original = new PipelineValue<string>("test", true);
+
+            // Act
+            var result = original.WithError("Test error", "TestOp");
+
+            // Assert
+            testing.VerifyExpression(result.IsValid == false, "IsValid should be false");
+        }
+
+        public void WithError_ErrorsCollectionGrows()
+        {
+            // Arrange
+            var original = new PipelineValue<string>("test", true);
+
+            // Act
+            var result1 = original.WithError("Error 1", "Op1");
+            var result2 = result1.WithError("Error 2", "Op2");
+            var result3 = result2.WithError("Error 3", "Op3");
+
+            // Assert
+            testing.VerifyExpression(result3.Errors.Count == 3, "Should have three errors");
+        }
+
+        public void ImplicitConversion_PipelineValueToT()
+        {
+            // Arrange
+            var pipelineValue = new PipelineValue<string>("test");
+
+            // Act
+            string value = pipelineValue;
+
+            // Assert
+            testing.VerifyExpression(value == "test", "Implicit conversion should work");
+        }
+
+        public void ImplicitConversion_TToPipelineValue()
+        {
+            // Arrange
+            string value = "test";
+
+            // Act
+            PipelineValue<string> pipelineValue = value;
+
+            // Assert
+            testing.VerifyExpression(pipelineValue.Value == "test", "Implicit conversion should work");
+            testing.VerifyExpression(pipelineValue.IsValid == true, "Should default to valid");
+        }
+
+        public void ImplicitConversion_NullHandling()
+        {
+            // Arrange
+            PipelineValue<string> nullPipelineValue = null;
+
+            // Act
+            string value = nullPipelineValue;
+
+            // Assert
+            testing.VerifyExpression(value == null, "Null PipelineValue should convert to null");
+        }
+    }
+}
+

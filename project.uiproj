@@ -1,0 +1,6 @@
+{
+  "Name": "Yash.FluentDataPipelines",
+  "ProjectType": "Library",
+  "Description": "A set of extensions for strings and other data types that enables the implementation of data pipelines.",
+  "MainFile": "NewActivity.xaml"
+}
